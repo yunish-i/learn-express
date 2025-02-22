@@ -74,17 +74,17 @@ app.get("/read/usernames", (req: UserRequest, res: Response) => {
   res.send(usernames);
 });
 
-// app.use("/read/username/:username", addMsgToRequest);
-// app.get("/read/username/:username", (req: UserRequest, res: Response) => {
-//   // edited here
-//   const username = req.params.username;
-//   const user = req.users?.filter((user) => user.username === username);
-//   if (user) {
-//     res.send(user);
-//   } else {
-//     res.send("User not found");
-//   }
-// });
+app.use("/read/username/:name", addMsgToRequest);
+app.get("/read/username/:name", (req: UserRequest, res: Response) => {
+  // edited here
+  const username = req.params.username;
+  const user = req.users?.filter((user) => user.username === username);
+  if (user) {
+    res.send(user);
+  } else {
+    res.status(404).send({ error: "User not found" });
+  }
+});
 
 // a middleware function that parses the request body to json
 app.use(express.json());
@@ -92,27 +92,25 @@ app.use(express.urlencoded({ extended: true }));
 // adds the middleware function to the application for POST requests
 app.use("/write/adduser", addMsgToRequest);
 
-async function getNextId(req: UserRequest, res: Response) {
-  // a route that receives a user object and saves it to the user data file
-  app.post("/write/adduser", async (req: UserRequest, res: Response) => {
-    try {
-      let newuser = req.body as User;
-      users.push(newuser);
+// a route that receives a user object and saves it to the user data file
+app.post("/write/adduser", async (req: UserRequest, res: Response) => {
+  try {
+    let newuser = req.body as User;
+    users.push(newuser);
 
-      await fsPromises.writeFile(
-        path.resolve(__dirname, dataFile),
-        JSON.stringify(users)
-      );
+    await fsPromises.writeFile(
+      path.resolve(__dirname, dataFile),
+      JSON.stringify(users)
+    );
 
-      console.log("User Saved");
-      res.send("done");
-    } catch (err) {
-      console.log("Failed to write:", err);
-      res.status(500).send("Error saving user");
-    }
-  });
+    console.log("User Saved");
+    res.send("done");
+  } catch (err) {
+    console.log("Failed to write:", err);
+    res.status(500).send("Error saving user");
+  }
+});
 
-  app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
-  });
-}
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`);
+});
