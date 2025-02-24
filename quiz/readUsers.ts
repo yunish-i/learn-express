@@ -16,7 +16,7 @@ router.get("/usernames", (req: UserRequest, res: Response) => {
 
 router.get("/username/:name", (req: UserRequest, res: Response) => {
   // edited here
-  const username = req.params.username;
+  const username = req.params.name;
   const user = req.users?.filter((user) => user.username === username);
   if (user) {
     res.send(user);

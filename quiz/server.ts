@@ -74,11 +74,13 @@ app.get("/read/usernames", (req: UserRequest, res: Response) => {
   res.send(usernames);
 });
 
-app.use("/read/username/:name", addMsgToRequest);
+app.use("/read/username", addMsgToRequest);
 app.get("/read/username/:name", (req: UserRequest, res: Response) => {
   // edited here
-  const username = req.params.username;
-  const user = req.users?.filter((user) => user.username === username);
+  const username = req.params.name;
+  const user = req.users?.filter(function (user) {
+    return user.username === username;
+  });
   if (user) {
     res.send(user);
   } else {
